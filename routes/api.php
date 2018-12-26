@@ -22,6 +22,8 @@ Route::group([
     Route::post('/register', 'AuthController@register');
 });
 
+// Route::resource('all-galleries');
+
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {

@@ -30,6 +30,15 @@ class User extends Authenticatable implements JWTSubject
         'password', 'remember_token',
     ];
 
+    //relacije
+    public function galleries() {
+        return $this->hasMany(Gallery::class);
+    }
+
+    public function comments() {
+        return $this->hasMany(Comment::class);
+    }
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
