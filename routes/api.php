@@ -22,7 +22,11 @@ Route::group([
     Route::post('/register', 'AuthController@register');
 });
 
-// Route::resource('all-galleries');
+Route::resource('galleries', GalleriesController::class)
+    ->except([ 'edit', 'create' ]);
+
+//dovlacimo sve galerije od autora
+Route::get('authors/{id}', 'AuthorController@show');
 
 
 

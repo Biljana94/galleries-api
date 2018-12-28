@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Gallery;
+use App\Image;
 use App\Http\Requests\GalleryRequest;
 use Illuminate\Http\Request;
 
@@ -20,26 +21,20 @@ class GalleriesController extends Controller
      */
     public function index(Request $request)
     {
-        // $requestTitle = $request->input('title');
-        // $take = $request->input('take');
-        // $skip = $request->input('skip');
-        // if($requestTitle) {
-        //     return Gallery::search($requestTitle, $take, $skip);
-        // }
-
-        // return Gallery::take($take)->skip($skip)->latest()->get();
-        return Gallery::all();
+        // $term = $request->input('term');
+        // return Gallery::search($term);
+        $userId = $request->input('id'); //dovukla sam id od usera
+        // dd($userId);
+        //da mi dovuce userove galerije
+        if($userId) {
+            return Gallery::where('user_id', $userId)->with(['images', 'user'])->latest()->paginate(10);
+        }
+        return Gallery::with(['images', 'user'])->latest()->paginate(10);
+        
     }
 
-    // /**
-    //  * Show the form for creating a new resource.
-    //  *
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function create()
-    // {
-    //     //
-    // }
+    // public function search() {}
+
 
     /**
      * Store a newly created resource in storage.
@@ -49,11 +44,24 @@ class GalleriesController extends Controller
      */
     public function store(GalleryRequest $request)
     {
-        return Gallery::create(
-            $request->only([
-                'title', 'description'
-            ])
-        );
+        $gallery = new Gallery();
+        $gallery->title = $request->input('title');
+        $gallery->description = $request->input('description');
+        $gallery->user_id = auth()->user()->id;
+        $gallery->save();
+        
+        //u $imagesRequest stavljam slike koje je user uneo preko inputa
+        $imagesRequest = $request->input('images');
+        $images = []; //prazan niz $images u koji cu smestati unete slike
+
+        //prolazimo kroz niz $imagesRequest koji je definisan kao niz u GalleryRequest.php i uzimamo svaku sliku posebno
+        foreach($imagesRequest as $image) {
+            $newImage = new Image($image); //pravimo instancu Image klase(modela)
+            $images[] = $newImage; //i tu sliku stavljamo u prazan niz $images koji prikazujemo u galeriji
+        }
+
+        $gallery->images()->saveMany($images);
+        return $gallery;
     }
 
     /**
@@ -64,7 +72,7 @@ class GalleriesController extends Controller
      */
     public function show(Gallery $gallery)
     {
-        return $gallery;
+        return $gallery->load(['images', 'user']);
     }
 
     // /**
@@ -85,9 +93,11 @@ class GalleriesController extends Controller
      * @param  \App\Gallery  $gallery
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Gallery $gallery)
+    public function update(GalleryRequest $request, Gallery $gallery)
     {
-        $gallery->update($request->only('title', 'description'));
+        $gallery->update(
+            $request->only('title', 'description')
+        );
         return $gallery;
     }
 
