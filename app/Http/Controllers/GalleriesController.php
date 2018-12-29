@@ -72,19 +72,8 @@ class GalleriesController extends Controller
      */
     public function show(Gallery $gallery)
     {
-        return $gallery->load(['images', 'user']);
+        return $gallery->load(['images', 'user', 'comments', 'comments.user']);
     }
-
-    // /**
-    //  * Show the form for editing the specified resource.
-    //  *
-    //  * @param  \App\Gallery  $gallery
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function edit(Gallery $gallery)
-    // {
-    //     //
-    // }
 
     /**
      * Update the specified resource in storage.

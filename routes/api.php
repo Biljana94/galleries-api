@@ -28,6 +28,11 @@ Route::resource('galleries', GalleriesController::class)
 //dovlacimo sve galerije od autora
 Route::get('authors/{id}', 'AuthorController@show');
 
+//ruta za postavljanje komentara
+Route::post('galleries/{id}/comments', 'CommentsController@store');
+//brisanje komentara
+Route::delete('/comments/{id}', 'CommentsController@destroy');
+
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
