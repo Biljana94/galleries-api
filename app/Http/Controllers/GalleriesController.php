@@ -96,9 +96,13 @@ class GalleriesController extends Controller
      * @param  \App\Gallery  $gallery
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Gallery $gallery)
+    public function destroy($id)
     {
-        $gallery->delete();
-        return $gallery;
+        // $gallery->delete();
+        // return $gallery;
+        Gallery::find($id)->delete();
+        return response()->json([
+            'message' => 'Your gallery is deleted!'
+        ]);
     }
 }
